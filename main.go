@@ -107,7 +107,6 @@ func substr(str string, start int, end int) string {
 }
 
 func main() {
-
 	dir, _ := os.Getwd()
 
 	fmt.Println(strings.Replace(dir, " ", "\\ ", -1))
@@ -131,7 +130,7 @@ func main() {
 <body>
 
   <form action="/upload-zip-file" method="post" enctype="multipart/form-data" target="_blank">
-      <input type="file" name="zipFile">
+      <input type="file" name="zipFile" accept="application/zip,application/x-zip,application/x-zip-compressed" required>
       <button type="submit">upload</button>
   </form>
 
@@ -152,6 +151,12 @@ func main() {
 		}
 		defer file.Close()
 
+		suffixPos := strings.Index(header.Filename, ".zip")
+		if suffixPos == -1 {
+			c.Error(errors.New("不是.zip后缀文件"))
+			return
+		}
+
 		savedTo := "package.zip"
 		newFile, err := os.Create(savedTo)
 		if err != nil {
@@ -163,7 +168,8 @@ func main() {
 		size, err := io.Copy(newFile, file)
 
 		//relativePathRoot := "/assets/"+ fmt.Sprintf("%d", time.Now().Unix())
-		relativePathRoot := "/assets/"+ substr(header.Filename, 0 ,4)
+		filenameWithoutSuffix := substr(header.Filename, 0, suffixPos)
+		relativePathRoot := "/assets/"+ filenameWithoutSuffix
 		extractDir := dir + relativePathRoot
 		RemoveContents(extractDir)
 		Unzip(savedTo,  extractDir)
