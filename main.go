@@ -162,7 +162,8 @@ func main() {
 
 		size, err := io.Copy(newFile, file)
 
-		relativePathRoot := "/assets/"+ fmt.Sprintf("%d", time.Now().Unix())
+		//relativePathRoot := "/assets/"+ fmt.Sprintf("%d", time.Now().Unix())
+		relativePathRoot := "/assets/"+ substr(header.Filename, 0 ,4)
 		extractDir := dir + relativePathRoot
 		RemoveContents(extractDir)
 		Unzip(savedTo,  extractDir)
